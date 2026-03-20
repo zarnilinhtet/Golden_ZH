@@ -1,242 +1,213 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quotation - {{ $profile->name ?? 'Golden ZH' }}</title>
 
     <link rel="stylesheet" href="{{ asset('fontawesome/css/all.min.css') }}">
-
     <link href="{{ asset('backend/css/bootstrap502.css') }}" rel="stylesheet">
     <script src="{{ asset('backend/js/jquery191.js') }}"></script>
-    <script src="{{ asset('backend/js/typehead401.js') }}"></script>
-
     <script src="{{ asset('backend/js/moment2103.js') }}"></script>
 
-    <meta name="csrf-token" content="{{ csrf_token() }}" />
-</head>
-<style>
-    @media print {
-        hr {
-            display: block;
-            /* Ensure <hr> is visible when printing */
-            border: 1px solid red;
-            /* Example: Add border for visibility */
-        }
-    }
-</style>
-<style>
-    @media print {
-        body {
-            color: black;
-            /* Set text color for printing */
-        }
-
-        /* Add any other styles you want to modify for printing */
+  <style>
+    /* Custom Colors matching the image */
+    :root {
+        --zh-green: #297B38;
+        --zh-light-green: #E2EFDA;
+        --zh-blue: #1A5296;
     }
 
-    @media print {
-
-        #test,
-        #printButton,
-        .excelButton {
-            display: none;
-        }
-
-        @page {
-            size: auto;
-            margin: 0;
-        }
+    body {
+        font-family: 'Times New Roman', Times, serif;
+        color: black;
+        font-size: 15px;
     }
 
+    .text-zh-green { color: var(--zh-green) !important; }
+    .text-zh-blue { color: var(--zh-blue) !important; }
+
+    .border-zh-green {
+        border-color: var(--zh-green) !important;
+    }
+
+    /* Divider styling */
+    hr.green-divider {
+        border: none;
+        border-top: 3px solid var(--zh-green) !important;
+        opacity: 1;
+        margin: 15px 0;
+    }
+
+    /* Table Styling */
+    .quotation-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 15px;
+    }
+
+    .quotation-table th, .quotation-table td {
+        border: 1px solid black !important;
+        padding: 6px 8px;
+        vertical-align: middle;
+    }
+
+    .quotation-table th {
+        background-color: var(--zh-light-green) !important;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    /* --- PRINT MEDIA QUERIES (UPDATED FOR COMPACT FIT) --- */
     @media print {
+        /* 1. Shrink the paper margins to give more vertical room (changed from 10mm to 5mm) */
+        @page { size: A4; margin: 5mm; }
+
         body {
             -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            /* 2. Slightly reduce font size when printing to save space */
+            font-size: 14px !important;
         }
+
+        #printButton { display: none !important; }
+        .container { width: 100% !important; max-width: 100% !important; padding: 0 !important; }
+
+        /* 3. Make table rows slightly tighter */
+        .quotation-table th, .quotation-table td {
+            padding: 4px 6px !important;
+        }
+
+        /* 4. Reduce large margins between sections just for printing */
+        .mt-4 { margin-top: 1rem !important; }
+        .mb-4 { margin-bottom: 1rem !important; }
+        .mb-5 { margin-bottom: 1.5rem !important; }
+
+        /* Multi-page optimizations */
+        thead { display: table-header-group; }
+        tr { page-break-inside: avoid; break-inside: avoid; }
+        .keep-together { page-break-inside: avoid; break-inside: avoid; }
     }
 </style>
-
+</head>
 <body>
-    <div class="container mx-auto">
-        <div class="mt-2 text-center">
-            <img src="{{ asset('logos/' . ($profile->logos ?? '')) }}" alt="{{ $profile->name ?? '' }} pos" width="100"
-                height="60">
+
+<div class="container bg-white p-4 mx-auto" style="max-width: 900px;">
+
+    <div class="row align-items-center mb-2">
+        <div class="col-3 text-center">
+            <img src="{{ asset('logos/' . ($profile->logos ?? '')) }}" alt="Logo" style="max-width: 130px; height: auto;">
         </div>
-        <div class="row" style="margin-top: 20px;">
-            <h5 class="text-center fw-bold">{{ $profile->name ?? '' }}</h5>
+        <div class="col-9 text-zh-green">
+            <h1 class="fw-bold mb-3" style="font-size: 32px;">{{ $profile->name ?? 'Golden ZH Co., Ltd.' }}</h1>
 
-            <p class="mb-2 text-center fw-bold" style="font-size: 13px;line-height:25px;">
-                {{ $profile->address ?? '' }}
-                <br>
-                {{ $profile->phno1 ?? '' }}, {{ $profile->phno2 ?? '' }}
-            </p>
-
-            <hr style="color: red !important; background-color: red  !important; height: 2px !important;">
-            <div class="row">
-                <p class="text-center fw-bold" style="font-size: 13px;"><i>*** မှားယွင်းမှုတစ်စုံတစ်ရာရှိပါက (24)
-                        နာရီအတွင်းအကြောင်းကြားပေးပါရန် ***</i></p>
+            <div class="d-flex mb-1" style="font-size: 14px;">
+                <div style="width: 25px;"><i class="fas fa-home"></i></div>
+                <div>{{ $profile->address ?? 'No.31, 18th Street, Latha Township, Yangon.' }}</div>
             </div>
-            <div class="row">
-                <div class="col-md-6 offset-8">
-                    <p class="mb-2 text-center fw-bold">Quotation No. : {{ $invoice->quote_no }} <br> Date :
-                        {{ $invoice->created_at->format('d-m-Y') }}</p>
+            <div class="d-flex mb-1" style="font-size: 14px;">
+                <div style="width: 25px;"><i class="fas fa-phone-alt"></i></div>
+                <div>{{ $profile->phno1 ?? '+95-9 9740 80404' }}, {{ $profile->phno2 ?? '+95-9 9798 94040' }}</div>
+            </div>
+            <div class="d-flex mb-1" style="font-size: 14px;">
+                <div style="width: 25px;"><i class="fas fa-envelope"></i></div>
+                <div>goldenzh.mm@gmail.com, goldenzh.sales@gmail.com</div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="green-divider">
+
+    <div class="text-end fw-bold mb-3" style="font-size: 16px;">
+        Issued date: &nbsp;&nbsp; {{ isset($invoice->created_at) ? $invoice->created_at->format('d.m.Y') : date('d.m.Y') }}
+    </div>
+
+    <div class="mb-3">
+        <h5 class="fw-bold mb-1">Dear Valued Customer,</h5>
+        <p class="mb-0" style="font-size: 16px;">We are pleased to present our most competitive price for your requested information as follows.</p>
+    </div>
+
+    <div class="table-responsive">
+        <table class="quotation-table">
+            <thead>
+                <tr>
+                    <th style="width: 5%;">Sr.</th>
+                    <th style="width: 45%;">Item</th>
+                    <th style="width: 15%;">Packaging Size</th>
+                    <th style="width: 17.5%;">Price/Bx (MMK)</th>
+                    <th style="width: 17.5%;">Unit Price (MMK)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(isset($invoices) && count($invoices) > 0)
+                    @foreach ($invoices as $key => $invoice)
+                        @foreach ($invoice->sells as $sellKey => $sell)
+                            <tr class="text-center">
+                                <td>{{ $sellKey + 1 }}.</td>
+                                <td class="text-start ps-2">{{ $sell->part_number }}</td>
+                                <td>{{ $sell->product_qty }} {{ $sell->unit }}/Bx</td>
+                                <td>{{ number_format($sell->product_price, 0) }}</td>
+                                <td>{{ number_format($sell->retail_price, 0) }}</td>
+                            </tr>
+                        @endforeach
+                    @endforeach
+                @endif
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex text-zh-blue mb-3 align-items-baseline" style="font-size: 15px;">
+        <div class="fw-bold me-2">**Note:**</div>
+        <div>
+            @if(isset($invoice) && !empty($invoice->remark))
+                <div id="thank">
+                    <p class="mb-0 fw-bold" style="font-size: 14px; color: black;">
+                        {{ $invoice->remark }}
+                    </p>
+                </div>
+            @endif
+        </div>
+    </div>
+
+    <p class="mb-4" style="font-size: 16px;">
+        This quotation is valid within 1 month from the date of issued.<br>
+        The price may be changeable without prior notice due to currency fluctuation.<br>
+        We will be happy to supply any further information you may need and trust that you call on us to fill your order, which will receive our prompt and careful attention.
+    </p>
+
+    <div class="row align-items-center mt-4 keep-together">
+        <div class="col-7 text-center">
+            <h5 class="fw-bold mb-1">"Empowering Healthcare with Reliable Solutions"</h5>
+            <h5 class="fw-bold">"Your Satisfaction is Our Priority"</h5>
+        </div>
+
+        <div class="col-5">
+            <div class="border border-2 border-zh-green p-3 text-zh-green" style="border-radius: 0;">
+                <h5 class="fw-bold text-center mb-3">{{ $profile->name ?? 'Golden ZH Co., Ltd.' }}</h5>
+
+                <div class="d-flex mb-2" style="font-size: 12px;">
+                    <div style="width: 20px;"><i class="fas fa-home"></i></div>
+                    <div>{{ $profile->address ?? 'No.31, 18th Street, Latha Township, Yangon.' }}</div>
+                </div>
+                <div class="d-flex mb-2" style="font-size: 12px;">
+                    <div style="width: 20px;"><i class="fas fa-phone-alt"></i></div>
+                    <div>{{ $profile->phno1 ?? '+95 9974080404' }}</div>
+                </div>
+                <div class="d-flex mb-1" style="font-size: 12px;">
+                    <div style="width: 20px;"><i class="fas fa-envelope"></i></div>
+                    <div style="word-break: break-all;">goldenzh.mm@gmail.com, goldenzh.sales@gmail.com</div>
                 </div>
             </div>
         </div>
-
-        <div class="mt-1 row">
-            <!-- <p class="fw-bold" style="font-size: 12px;">Sale ID: {{ $invoice->invoice_no }}<br>Employee : </p> -->
-            <div class="table-responsive">
-                <table class="mt-1" style="font-size: 13px;width:100%;">
-                    <thead>
-                        {{-- <tr class="">
-                            <th colspan="4" class="py-1 ps-1 fw-bold" style="border: 1px solid black !important;">Name - {{$invoice->customer_name}}</th>
-                            <th colspan="2" class="py-1 ps-1" style="border: 1px solid black !important;">Date - {{$invoice->created_at->format('d-m-Y')}}</th>
-                        </tr> --}}
-                        <tr class="text-center">
-                            <th class="py-1" style="width: 5%; border: 1px solid black !important;">Sr.</th>
-                            <th class="py-1" style="width: 30%; border: 1px solid black !important;">Product Name</th>
-                            <th class="py-1" style="width: 10%; border: 1px solid black !important;">Qty</th>
-                            <th class="py-1" style="width: 10%; border: 1px solid black !important;">Unit</th>
-                            <th class="py-1" style="width: 10%; border: 1px solid black !important;">Unit Price</th>
-                            <th class="py-1" style="width: 10%; border: 1px solid black !important;">Discount</th>
-                            <th class="py-1" style="width: 15%; border: 1px solid black !important;">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-center" style="border: 1px solid black !important;">
-                        @foreach ($invoices as $key => $invoice)
-                            @foreach ($invoice->sells as $key => $sell)
-                                <tr class="text-center fw-bold">
-                                    <td style="border: 1px solid black !important;">{{ $key + 1 }}.</td>
-                                    <td class="py-1 border" style="border: 1px solid black !important;">
-                                        {{ $sell->part_number }}</td>
-                                    <td class="text-center pe-1" style="border: 1px solid black !important;">
-                                        {{ $sell->product_qty }}
-                                    </td>
-                                    <td class="text-center pe-1" style="border: 1px solid black !important;">
-                                        {{ $sell->unit }}
-                                    </td>
-                                    <td class="text-end pe-1" style="border: 1px solid black !important;">
-                                        @if ($invoice->sale_price_category == 'HD')
-                                            {{ $sell->product_price }}
-                                        @elseif ($invoice->sale_price_category == 'Clinic')
-                                            {{ $sell->retail_price }}
-                                        @elseif ($invoice->sale_price_category == 'Default')
-                                            {{ $sell->retail_price }}
-                                        @else
-                                            @foreach ($items as $item)
-                                                @if ($item->item_name === $sell->part_number)
-                                                    {{ $item->buy_price }}
-                                                @break
-                                            @endif
-                                        @endforeach
-                                    @endif
-                                </td>
-                                <td class="text-end pe-1" style="border: 1px solid black !important;">
-                                    {{ $sell->item_discount }}{{ ' ' }}{{ $sell->ks_percent }}</td>
-                                <td class="text-end pe-1" style="border: 1px solid black !important;">
-                                    @if ($invoice->sale_price_category == 'HD')
-                                        {{ $sell->product_price * $sell->product_qty }}
-                                    @elseif ($invoice->sale_price_category == 'Clinic')
-                                        {{ $sell->retail_price * $sell->product_qty }}
-                                    @elseif ($invoice->sale_price_category == 'Default')
-                                        {{ $sell->retail_price * $sell->product_qty }}
-                                    @else
-                                        @foreach ($items as $item)
-                                            @if ($item->item_name === $sell->part_number)
-                                                {{ $item->buy_price * $sell->product_qty }}
-                                            @break
-                                        @endif
-                                    @endforeach
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                @endforeach
-            </tbody>
-            <tfoot>
-                <tr style="line-height: 25px;">
-                    <td colspan="5"></td>
-                    <td class="text-end fw-bold pe-1" style="border: 1px solid black !important;">Sub Total</td>
-                    <td class="text-end fw-bold pe-1" style="border: 1px solid black !important;">
-                        {{ $invoice->net_total ?? 0 }}</td>
-                </tr>
-                {{-- <tr style="line-height: 25px;">
-                    <td colspan="5"></td>
-                    <td class="text-end fw-bold pe-1" style="border: 1px solid black !important;">Item Discount
-                    </td>
-                    <td class="text-end fw-bold pe-1" style="border: 1px solid black !important;">
-                        @php
-                            $total_discount = 0;
-                        @endphp
-
-                        @foreach ($invoice->sells as $key => $sell)
-                            @if ($sell->ks_percent == 'ks')
-                                @php
-                                    $total_discount = $sell->item_discount;
-                                @endphp
-                            @else
-                                @if ($invoice->sale_price_category == 'Default')
-                                    @if ($invoice->type == 'Whole Sale')
-                                        @php
-                                            $total_discount =
-                                                ($sell->product_price * $sell->product_qty * $sell->item_discount) /
-                                                100;
-                                        @endphp
-                                    @else
-                                        @php
-                                            $total_discount =
-                                                ($sell->retail_price * $sell->product_qty * $sell->item_discount) / 100;
-                                        @endphp
-                                    @endif
-                                @elseif ($invoice->sale_price_category == 'Whole Sale')
-                                    @php
-                                        $total_discount =
-                                            ($sell->product_price * $sell->product_qty * $sell->item_discount) / 100;
-                                    @endphp
-                                @elseif ($invoice->sale_price_category == 'Retail')
-                                    @php
-                                        $total_discount =
-                                            ($sell->retail_price * $sell->product_qty * $sell->item_discount) / 100;
-                                    @endphp
-                                @endif
-                            @endif
-                        @endforeach
-
-                        {{ $total_discount ?? 0 }}
-                    </td>
-                </tr> --}}
-                <tr style="line-height: 25px;">
-                    <td colspan="5"></td>
-                    <td class="text-end fw-bold pe-1" style="border: 1px solid black !important;">Overall
-                        Discount</td>
-                    <td class="text-end fw-bold pe-1" style="border: 1px solid black !important;">
-                        {{ $invoice->discount_total ?? 0.0 }}</td>
-                </tr>
-                <tr style="line-height: 25px;">
-                    <td colspan="5"></td>
-                    <td class="text-end fw-bold pe-1" style="border: 1px solid black !important;">Total</td>
-                    <td class="text-end fw-bold pe-1" style="border: 1px solid black !important;">
-                        {{ $invoice->total ?? '0.00' }}
-                    </td>
-                </tr>
-
-            </tfoot>
-        </table>
-        <div class="text-center mt-3" id="thank">
-            <p class="text-center fw-bold" style="font-size: 12px;">
-                အားပေးမှု့အတွက် ကျေးဇူးတင်ပါသည်။</p>
-            </p>
-        </div>
     </div>
-    <a onclick="printPage()" id="printButton" class="col-md-1
-    mt-4 btn btn-primary">Print</a>
+
+    <div class="text-center mt-5" id="printButton">
+        <button onclick="window.print()" class="btn btn-success px-4 py-2">
+            <i class="fas fa-print me-2"></i> Print Quotation
+        </button>
+    </div>
+
 </div>
-</div>
-<script>
-    function printPage() {
-        window.print();
-    }
-</script>
 
 </body>
-
 </html>
